@@ -240,6 +240,29 @@ public static void DatabaseInsertQuery(Connection conn, int tablechoice) throws 
                 PTS = keyboard.nextInt();
                 System.out.print("Please enter a FTM/FTA: ");
                 FTMFTA = keyboard.nextInt();
+
+                qry = String.format("Insert Into PlayerStats (PSID, PlayerID, PName, FGMFPA, 3FGMFPA, GP, PTS, FTMFTA) Values (%d, %d, '%s', %d, %d, %d, %d, %d)", PSID, PlayerID, PlayerName, FGMFPA, FGMFPA3, GP, PTS, FTMFTA);
+                rs = stmt.executeQuery(qry);
+
+                // Printing table after insertion
+                rs = stmt.executeQuery("Select * From PlayerStats");
+
+                System.out.format("%-4s %-20s %-20s %-20s %-20s %-20s %-20s %-20s%n", "PSID", "PlayerID", "PName", "FGMFPA", "3FGMFPA", "GP", "PTS", "FTMFTA");
+                while(rs.next())
+                {
+                  PSID = rs.getInt("PSID");
+                  PlayerID = rs.getInt("PlayerID");
+                  PlayerName = rs.getString("PName");
+                  FGMFPA = rs.getInt("FGMFPA");
+                  FGMFPA3 = rs.getInt("3FGMFPA");
+                  GP = rs.getInt("GP");
+                  PTS = rs.getInt("PTS");
+                  FTMFTA = rs.getInt("FTMFTA");
+
+                  System.out.format("%-4d %-20d %-20s %-20d %-20d %-20d %-20d %-20d%n", PSID, PlayerID, PlayerName, FGMFPA, FGMFPA3, GP, PTS, FTMFTA);
+                }
+                System.out.println();
+                rs.close();
                 break;
         case 4:
                 System.out.print("Please enter a GMID: ");
@@ -250,6 +273,25 @@ public static void DatabaseInsertQuery(Connection conn, int tablechoice) throws 
                 TimeOnTeam = keyboard.nextInt();
                 System.out.print("Please enter the Team ID the belong to: ");
                 GTeam = keyboard.nextInt();
+
+                qry = String.format("Insert Into GenManager (GMID, GMName, TimeOnTeam, Team) Values (%d, '%s', %d, %d)", GMID, GName, TimeOnTeam, GTeam);
+                rs = stmt.executeQuery(qry);
+
+                // Printing table after insertion
+                rs = stmt.executeQuery("Select * From GenManager");
+
+                System.out.format("%-4s %-20s %-20s %-20s%n", "GMID", "GMName", "TimeOnTeam", "Team");
+                while(rs.next())
+                {
+                  GMID = rs.getInt("GMID");
+                  GName = rs.getString("GMName");
+                  TimeOnTeam= rs.getInt("TimeOnTeam");
+                  GTeam = rs.getInt("Team");
+
+                  System.out.format("%-4d %-20s %-20d %-20d%n", GMID, GName, TimeOnTeam, GTeam);
+                }
+                System.out.println();
+                rs.close();
                 break;
         case 5:
                 System.out.print("Please enter a OID: ");
@@ -260,6 +302,25 @@ public static void DatabaseInsertQuery(Connection conn, int tablechoice) throws 
                 TimeOwned = keyboard.nextInt();
                 System.out.print("Please enter Team ID they belond to: ");
                 OTeam = keyboard.nextInt();
+
+                qry = String.format("Insert Into Owner (OID, OName, TimeOwned, Team) Values (%d, '%s', %d, %d)", OID, OName, TimeOwned, OTeam);
+                rs = stmt.executeQuery(qry);
+
+                // Printing table after insertion
+                rs = stmt.executeQuery("Select * From Owner");
+
+                System.out.format("%-4s %-20s %-20s %-20s%n", "OID", "OName", "TimeOwned", "Team");
+                while(rs.next())
+                {
+                  OID = rs.getInt("OID");
+                  OName = rs.getString("OName");
+                  TimeOwned= rs.getInt("TimeOwned");
+                  OTeam = rs.getInt("Team");
+
+                  System.out.format("%-4d %-20s %-20d %-20d%n", OID, OName, TimeOwned, OTeam);
+                }
+                System.out.println();
+                rs.close();
                 break;
         case 6:
                 System.out.print("Please enter a CID: ");
@@ -270,6 +331,25 @@ public static void DatabaseInsertQuery(Connection conn, int tablechoice) throws 
                 CRole = keyboard.next();
                 System.out.print("Please enter Team ID they belong to: ");
                 CTeam = keyboard.nextInt();
+
+                qry = String.format("Insert Into Coach (CID, CName, CRole, Team) Values (%d, '%s', '%s', %d)", CID, CName, CRole, CTeam);
+                rs = stmt.executeQuery(qry);
+
+                // Printing table after insertion
+                rs = stmt.executeQuery("Select * From Coach");
+
+                System.out.format("%-4s %-20s %-20s %-20s%n", "CID", "CName", "CRole", "Team");
+                while(rs.next())
+                {
+                  CID = rs.getInt("CID");
+                  CName = rs.getString("CName");
+                  CRole = rs.getString("CRole");
+                  CTeam = rs.getInt("Team");
+
+                  System.out.format("%-4d %-20s %-20s %-20d%n", CID, CName, CRole, CTeam);
+                }
+                System.out.println();
+                rs.close();
                 break;
         case 7:
                 System.out.print("Please enter a HID: ");
