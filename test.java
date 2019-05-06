@@ -29,17 +29,23 @@ public class Menu
 
             switch (choice)
             {
-                case 1: // A choice of 1 is to print all student names, IDs, and
-                        // their majors.
+                case 1:
                         tablechoice = PrintTableandGetResponse();
                         DatabaseInsertQuery(conn, tablechoice);
-                        // StudentMajorQuery(conn);
                         break;
                 case 2:
                         break;
                 case 3:
                         System.out.println("Something");
-                case 4: // To quit the program.
+                case 4:
+                        break;
+                case 5:
+                        break;
+                case 5:
+                        break;
+                case 6:
+                        break;
+                case 7:
                         System.out.println("Exiting Program");
                         break;
                 default: // Illegal choice for integers other than 1, 2 and 3.
@@ -71,10 +77,13 @@ public static int PrintMenuAndGetResponse()
     Scanner keyboard = new Scanner(System.in);
     int response;
     System.out.println("Choose from one of the following options:");
-    System.out.println(" 1. Insert data into database");
-    System.out.println(" 2. Delete data into database");
-    System.out.println(" 3. Update data into database");
-    System.out.println(" 4. Quit the program%n");
+    System.out.println(" 1. Insertion");
+    System.out.println(" 2. Deletion");
+    System.out.println(" 3. Update");
+    System.out.println(" 4. List all coaches along with their teams and roles.");
+    System.out.println(" 5. Player who has the most points.");
+    System.out.println(" 6. Player who has the least points.");
+    System.out.println(" 7. Quit the program%n");
     System.out.print("Your choice ==> ");
     response = keyboard.nextInt();
     // Leave a blank line before printing the output response.
@@ -300,24 +309,57 @@ public static void DatabaseInsertQuery(Connection conn, int tablechoice) throws 
                 System.out.println("Illegal choice");
                 break;
     }
-    /*
+}
+
+public static void PlayerMost(Connection conn) throws SQLException 
+{
     Statement stmt = conn.createStatement();
-    String qry = "INSERT Into Home (HID, State, City, Arena) Values (1, 'Kansas', 'Wichita', 'Somewhere')";
-    ResultSet rs = stmt.executeQuery(qry);
+    String qry = "select PName, Position, MAX(PTS) " +
+    "from Player, PlayerStats"
+    +
+    "where PID = PlayerID";
+    ResultSet rs = stmt.executeQuery(sql);
 
-    String qry2 = "SELECT * from Home"
-    ResultSet rs2 = stmt.executeQuery(qry2)
+    System.out.format("%n");
+    System.out.format("%-12s %4s %-20s%n", "Player", "Position", "Points");
 
-    while (rs.next())
+    while (rs.next()) 
     {
-        String sname = rs.getString("SName");
-        int sid = rs.getInt("StudentId");
-        String dname = rs.getString("DName");
-        System.out.format("%-12s %4d %-20s%n", sname, sid, dname);
-    }
-    System.out.println();
-    rs.close();
-    */
+       String pname = rs.getString("PName");
+       String position = rs.getString("Position");
+       String points = rs.getString("MAX(PTS)");
+       System.out.format("%-12s %4d %-20s%n", pname, position, points);
+     }
+     System.out.println();
+     rs.close();
+}
+
+// Function for listing player who has the least points
+public static void PlayerLeast(Connection conn) throws SQLException 
+{
+    Statement stmt = conn.createStatement();
+    String qry = "select PName, Position, MIN(PTS) "
+    +
+    "from Player, PlayerStats"
+    +
+    "where PID = PlayerID";
+    ResultSet rs = stmt.executeQuery(sql);
+
+    System.out.format("%n");
+    System.out.format("%-12s %4s %-20s%n", "Player", "Position", "Points");
+
+    while (rs.next()) 
+    {
+       String pname = rs.getString("PName");
+       String position = rs.getString("Position");
+       String points = rs.getString("MAX(PTS)");
+       System.out.format("%-12s %4d %-20s%n", pname, position, points);
+     }
+     System.out.println();
+     rs.close();
+}
+
+
 }
 
 }
