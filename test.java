@@ -41,8 +41,6 @@ public class Menu
                         break;
                 case 5:
                         break;
-                case 5:
-                        break;
                 case 6:
                         break;
                 case 7:
@@ -311,19 +309,19 @@ public static void DatabaseInsertQuery(Connection conn, int tablechoice) throws 
     }
 }
 
-public static void PlayerMost(Connection conn) throws SQLException 
+public static void PlayerMost(Connection conn) throws SQLException
 {
     Statement stmt = conn.createStatement();
     String qry = "select PName, Position, MAX(PTS) " +
     "from Player, PlayerStats"
     +
     "where PID = PlayerID";
-    ResultSet rs = stmt.executeQuery(sql);
+    ResultSet rs = stmt.executeQuery(qry);
 
     System.out.format("%n");
     System.out.format("%-12s %4s %-20s%n", "Player", "Position", "Points");
 
-    while (rs.next()) 
+    while (rs.next())
     {
        String pname = rs.getString("PName");
        String position = rs.getString("Position");
@@ -335,7 +333,7 @@ public static void PlayerMost(Connection conn) throws SQLException
 }
 
 // Function for listing player who has the least points
-public static void PlayerLeast(Connection conn) throws SQLException 
+public static void PlayerLeast(Connection conn) throws SQLException
 {
     Statement stmt = conn.createStatement();
     String qry = "select PName, Position, MIN(PTS) "
@@ -343,12 +341,12 @@ public static void PlayerLeast(Connection conn) throws SQLException
     "from Player, PlayerStats"
     +
     "where PID = PlayerID";
-    ResultSet rs = stmt.executeQuery(sql);
+    ResultSet rs = stmt.executeQuery(qry);
 
     System.out.format("%n");
     System.out.format("%-12s %4s %-20s%n", "Player", "Position", "Points");
 
-    while (rs.next()) 
+    while (rs.next())
     {
        String pname = rs.getString("PName");
        String position = rs.getString("Position");
@@ -359,7 +357,5 @@ public static void PlayerLeast(Connection conn) throws SQLException
      rs.close();
 }
 
-
-}
 
 }
