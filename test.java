@@ -13,6 +13,10 @@ public class Menu
     {
         int choice;
         int tablechoice;
+        String tablechoice2;
+        int rowID;
+        String input;
+        Scanner keyboard = new Scanner(System.in);
         Connection conn = null;
         try
         {
@@ -32,13 +36,23 @@ public class Menu
                 case 1:
                         tablechoice = PrintTableandGetResponse();
                         DatabaseInsertQuery(conn, tablechoice);
+                        PrintAnyTable(conn, tablechoice);
                         break;
                 case 2:
                         tablechoice = PrintTableandGetResponse();
                         DatabaseDeleteQuery(conn, tablechoice);
+                        PrintAnyTable(conn, tablechoice);
                         break;
                 case 3:
-                        System.out.println("Something");
+                        tablechoice = PrintTableandGetResponse();
+                        PrintAnyTable(conn, tablechoice);
+                        tablechoice2 = PrintAtrributesandGetResponse(tablechoice);
+                        System.out.print("Enter row ID of the desired change: ");
+                        rowID = keyboard.nextInt();
+                        System.out.print("Enter the new value to be updated: ");
+                        input = keyboard.next();
+                        DatabaseUpdateQuery(conn, tablechoice, tablechoice2, rowID, input);
+                        PrintAnyTable(conn, tablechoice);
                         break;
                 case 4:
                         PrintCoaches(conn);
@@ -50,6 +64,10 @@ public class Menu
                         PlayerLeast(conn);
                         break;
                 case 7:
+                        tablechoice = PrintTableandGetResponse();
+                        PrintAnyTable(conn, tablechoice);
+                        break;
+                case 8:
                         System.out.println("Exiting Program");
                         break;
                 default: // Illegal choice for integers other than 1, 2 and 3.
@@ -87,7 +105,8 @@ public static int PrintMenuAndGetResponse()
     System.out.println(" 4. List all coaches along with their teams and roles.");
     System.out.println(" 5. Player who has the most points.");
     System.out.println(" 6. Player who has the least points.");
-    System.out.println(" 7. Quit the program%n");
+    System.out.println(" 7. Print Specific table.");
+    System.out.println(" 8. Quit the program");
     System.out.print("Your choice ==> ");
     response = keyboard.nextInt();
     // Leave a blank line before printing the output response.
@@ -107,12 +126,77 @@ public static int PrintTableandGetResponse()
     System.out.println(" 5. Owner");
     System.out.println(" 6. Coach");
     System.out.println(" 7. Home");
-    System.out.println(" 8. Quit the program%n");
+    System.out.println(" 8. Quit the program");
     System.out.print("Your choice ==> ");
     response = keyboard.nextInt();
     // Leave a blank line before printing the output response.
     System.out.println( );
     return response;
+}
+
+public static String PrintAtrributesandGetResponse(int tablechoice2)
+{
+  Scanner keyboard = new Scanner(System.in);
+  String response;
+
+  System.out.println("Please type the attributes as shown, is case sensetive");
+  switch(tablechoice2)
+  {
+    case 1:
+          System.out.println("Choose from one of the following attributes for Team");
+          System.out.println("TName");
+          System.out.println("Home");
+          break;
+    case 2:
+          System.out.println("Choose from one of the following attributes for Player");
+          System.out.println("PName");
+          System.out.println("Position");
+          System.out.println("Team");
+          break;
+    case 3:
+          System.out.println("Choose from one of the following attributes for PlayerStats");
+          System.out.println("Player ID");
+          System.out.println("FGMFPA");
+          System.out.println("3FGMFPA");
+          System.out.println("GP");
+          System.out.println("PTS");
+          System.out.println("FTMFTA");
+          break;
+    case 4:
+          System.out.println("Choose from one of the following attributes for GenManager");
+          System.out.println("GMName");
+          System.out.println("TimeOnTeam");
+          System.out.println("Team");
+          break;
+    case 5:
+          System.out.println("Choose from one of the following attributes for Owner");
+          System.out.println("OName");
+          System.out.println("TimeOwned");
+          System.out.println("Team");
+          break;
+    case 6:
+          System.out.println("Choose from one of the following attributes for Coach");
+          System.out.println("CName");
+          System.out.println("CRole");
+          System.out.println("Team");
+          break;
+    case 7:
+          System.out.println("Choose from one of the following attributes for Home");
+          System.out.println("State");
+          System.out.println("City");
+          System.out.println("Arena");
+          break;
+    case 8:
+            System.out.println("Exiting Program");
+            break;
+    default:
+            System.out.println("Illegal choice");
+            break;
+  }
+  // Leave a blank line before printing the output response.
+  System.out.print("Your choice ==> ");
+  response = keyboard.next();
+  return response;
 }
 
 public static void DatabaseInsertQuery(Connection conn, int tablechoice) throws SQLException
@@ -182,19 +266,6 @@ public static void DatabaseInsertQuery(Connection conn, int tablechoice) throws 
                 qry = String.format("Insert Into Team (TID, TName, Home) Values (%d, '%s', %d)", TID, TName, THome);
                 rs = stmt.executeQuery(qry);
 
-                // Printing table after insertion
-                rs = stmt.executeQuery("Select * From Team");
-
-                System.out.format("%-4s %-20s %-20s%n", "TID", "TName", "Home");
-                while(rs.next())
-                {
-                  TID = rs.getInt("TID");
-                  TName = rs.getString("TName");
-                  THome = rs.getInt("Home");
-
-                  System.out.format("%-4d %-20s %-20d%n", TID, TName, THome);
-                }
-                System.out.println();
                 rs.close();
                 break;
         case 2:
@@ -212,20 +283,6 @@ public static void DatabaseInsertQuery(Connection conn, int tablechoice) throws 
                 qry = String.format("Insert Into Player (PID, PName, Position, Team) Values (%d, '%s', '%s', %d)", PID, PName, Position, PTeam);
                 rs = stmt.executeQuery(qry);
 
-                // Printing table after insertion
-                rs = stmt.executeQuery("Select * From Player");
-
-                System.out.format("%-4s %-20s %-20s %-20s%n", "PID", "PName", "Position", "Team");
-                while(rs.next())
-                {
-                  PID = rs.getInt("PID");
-                  PName = rs.getString("PName");
-                  Position = rs.getString("Position");
-                  PTeam = rs.getInt("Team");
-
-                  System.out.format("%-4d %-20s %-20s %-20d%n", PID, PName, Position, PTeam);
-                }
-                System.out.println();
                 rs.close();
 
                 break;
@@ -250,24 +307,6 @@ public static void DatabaseInsertQuery(Connection conn, int tablechoice) throws 
                 qry = String.format("Insert Into PlayerStats (PSID, PlayerID, PName, FGMFPA, 3FGMFPA, GP, PTS, FTMFTA) Values (%d, %d, '%s', %d, %d, %d, %d, %d)", PSID, PlayerID, PlayerName, FGMFPA, FGMFPA3, GP, PTS, FTMFTA);
                 rs = stmt.executeQuery(qry);
 
-                // Printing table after insertion
-                rs = stmt.executeQuery("Select * From PlayerStats");
-
-                System.out.format("%-4s %-20s %-20s %-20s %-20s %-20s %-20s %-20s%n", "PSID", "PlayerID", "PName", "FGMFPA", "3FGMFPA", "GP", "PTS", "FTMFTA");
-                while(rs.next())
-                {
-                  PSID = rs.getInt("PSID");
-                  PlayerID = rs.getInt("PlayerID");
-                  PlayerName = rs.getString("PName");
-                  FGMFPA = rs.getInt("FGMFPA");
-                  FGMFPA3 = rs.getInt("3FGMFPA");
-                  GP = rs.getInt("GP");
-                  PTS = rs.getInt("PTS");
-                  FTMFTA = rs.getInt("FTMFTA");
-
-                  System.out.format("%-4d %-20d %-20s %-20d %-20d %-20d %-20d %-20d%n", PSID, PlayerID, PlayerName, FGMFPA, FGMFPA3, GP, PTS, FTMFTA);
-                }
-                System.out.println();
                 rs.close();
                 break;
         case 4:
@@ -283,20 +322,6 @@ public static void DatabaseInsertQuery(Connection conn, int tablechoice) throws 
                 qry = String.format("Insert Into GenManager (GMID, GMName, TimeOnTeam, Team) Values (%d, '%s', %d, %d)", GMID, GName, TimeOnTeam, GTeam);
                 rs = stmt.executeQuery(qry);
 
-                // Printing table after insertion
-                rs = stmt.executeQuery("Select * From GenManager");
-
-                System.out.format("%-4s %-20s %-20s %-20s%n", "GMID", "GMName", "TimeOnTeam", "Team");
-                while(rs.next())
-                {
-                  GMID = rs.getInt("GMID");
-                  GName = rs.getString("GMName");
-                  TimeOnTeam= rs.getInt("TimeOnTeam");
-                  GTeam = rs.getInt("Team");
-
-                  System.out.format("%-4d %-20s %-20d %-20d%n", GMID, GName, TimeOnTeam, GTeam);
-                }
-                System.out.println();
                 rs.close();
                 break;
         case 5:
@@ -312,20 +337,6 @@ public static void DatabaseInsertQuery(Connection conn, int tablechoice) throws 
                 qry = String.format("Insert Into Owner (OID, OName, TimeOwned, Team) Values (%d, '%s', %d, %d)", OID, OName, TimeOwned, OTeam);
                 rs = stmt.executeQuery(qry);
 
-                // Printing table after insertion
-                rs = stmt.executeQuery("Select * From Owner");
-
-                System.out.format("%-4s %-20s %-20s %-20s%n", "OID", "OName", "TimeOwned", "Team");
-                while(rs.next())
-                {
-                  OID = rs.getInt("OID");
-                  OName = rs.getString("OName");
-                  TimeOwned= rs.getInt("TimeOwned");
-                  OTeam = rs.getInt("Team");
-
-                  System.out.format("%-4d %-20s %-20d %-20d%n", OID, OName, TimeOwned, OTeam);
-                }
-                System.out.println();
                 rs.close();
                 break;
         case 6:
@@ -341,20 +352,6 @@ public static void DatabaseInsertQuery(Connection conn, int tablechoice) throws 
                 qry = String.format("Insert Into Coach (CID, CName, CRole, Team) Values (%d, '%s', '%s', %d)", CID, CName, CRole, CTeam);
                 rs = stmt.executeQuery(qry);
 
-                // Printing table after insertion
-                rs = stmt.executeQuery("Select * From Coach");
-
-                System.out.format("%-4s %-20s %-20s %-20s%n", "CID", "CName", "CRole", "Team");
-                while(rs.next())
-                {
-                  CID = rs.getInt("CID");
-                  CName = rs.getString("CName");
-                  CRole = rs.getString("CRole");
-                  CTeam = rs.getInt("Team");
-
-                  System.out.format("%-4d %-20s %-20s %-20d%n", CID, CName, CRole, CTeam);
-                }
-                System.out.println();
                 rs.close();
                 break;
         case 7:
@@ -370,20 +367,6 @@ public static void DatabaseInsertQuery(Connection conn, int tablechoice) throws 
                 qry = String.format("Insert Into Home (HID, State, City, Arena) Values (%d, '%s', '%s', '%s')", HID, State, City, Arena);
                 rs = stmt.executeQuery(qry);
 
-                // Printing table after insertion
-                rs = stmt.executeQuery("Select * From Home");
-
-                System.out.format("%-4s %-20s %-20s %-20s%n", "HID", "State", "City", "Arena");
-                while(rs.next())
-                {
-                  HID = rs.getInt("HID");
-                  State = rs.getString("State");
-                  City = rs.getString("City");
-                  Arena = rs.getString("Arena");
-
-                  System.out.format("%-4d %-20s %-20s %-20s%n", HID, State, City, Arena);
-                }
-                System.out.println();
                 rs.close();
                 break;
         case 8:
@@ -458,19 +441,6 @@ public static void DatabaseDeleteQuery(Connection conn, int tablechoice) throws 
                 qry = String.format("Delete From Team Where TID = %d", TID);
                 rs = stmt.executeQuery(qry);
 
-                // Printing table after insertion
-                rs = stmt.executeQuery("Select * From Team");
-
-                System.out.format("%-4s %-20s %-20s%n", "TID", "TName", "Home");
-                while(rs.next())
-                {
-                  TID = rs.getInt("TID");
-                  TName = rs.getString("TName");
-                  THome = rs.getInt("Home");
-
-                  System.out.format("%-4d %-20s %-20d%n", TID, TName, THome);
-                }
-                System.out.println();
                 rs.close();
                 break;
         case 2:
@@ -480,20 +450,6 @@ public static void DatabaseDeleteQuery(Connection conn, int tablechoice) throws 
                 qry = String.format("Delete From Player Where PID = %d", PID);
                 rs = stmt.executeQuery(qry);
 
-                // Printing table after insertion
-                rs = stmt.executeQuery("Select * From Player");
-
-                System.out.format("%-4s %-20s %-20s %-20s%n", "PID", "PName", "Position", "Team");
-                while(rs.next())
-                {
-                  PID = rs.getInt("PID");
-                  PName = rs.getString("PName");
-                  Position = rs.getString("Position");
-                  PTeam = rs.getInt("Team");
-
-                  System.out.format("%-4d %-20s %-20s %-20d%n", PID, PName, Position, PTeam);
-                }
-                System.out.println();
                 rs.close();
 
                 break;
@@ -504,24 +460,6 @@ public static void DatabaseDeleteQuery(Connection conn, int tablechoice) throws 
                 qry = String.format("Delete From PlayerStats Where PSID = %d", PSID);
                 rs = stmt.executeQuery(qry);
 
-                // Printing table after insertion
-                rs = stmt.executeQuery("Select * From PlayerStats");
-
-                System.out.format("%-4s %-20s %-20s %-20s %-20s %-20s %-20s %-20s%n", "PSID", "PlayerID", "PName", "FGMFPA", "3FGMFPA", "GP", "PTS", "FTMFTA");
-                while(rs.next())
-                {
-                  PSID = rs.getInt("PSID");
-                  PlayerID = rs.getInt("PlayerID");
-                  PlayerName = rs.getString("PName");
-                  FGMFPA = rs.getInt("FGMFPA");
-                  FGMFPA3 = rs.getInt("3FGMFPA");
-                  GP = rs.getInt("GP");
-                  PTS = rs.getInt("PTS");
-                  FTMFTA = rs.getInt("FTMFTA");
-
-                  System.out.format("%-4d %-20d %-20s %-20d %-20d %-20d %-20d %-20d%n", PSID, PlayerID, PlayerName, FGMFPA, FGMFPA3, GP, PTS, FTMFTA);
-                }
-                System.out.println();
                 rs.close();
                 break;
         case 4:
@@ -531,20 +469,6 @@ public static void DatabaseDeleteQuery(Connection conn, int tablechoice) throws 
                 qry = String.format("Delete From GenManager Where GMID = %d", GMID);
                 rs = stmt.executeQuery(qry);
 
-                // Printing table after insertion
-                rs = stmt.executeQuery("Select * From GenManager");
-
-                System.out.format("%-4s %-20s %-20s %-20s%n", "GMID", "GMName", "TimeOnTeam", "Team");
-                while(rs.next())
-                {
-                  GMID = rs.getInt("GMID");
-                  GName = rs.getString("GMName");
-                  TimeOnTeam= rs.getInt("TimeOnTeam");
-                  GTeam = rs.getInt("Team");
-
-                  System.out.format("%-4d %-20s %-20d %-20d%n", GMID, GName, TimeOnTeam, GTeam);
-                }
-                System.out.println();
                 rs.close();
                 break;
         case 5:
@@ -554,20 +478,6 @@ public static void DatabaseDeleteQuery(Connection conn, int tablechoice) throws 
                 qry = String.format("Delete From Owner Where OID = %d", OID);
                 rs = stmt.executeQuery(qry);
 
-                // Printing table after insertion
-                rs = stmt.executeQuery("Select * From Owner");
-
-                System.out.format("%-4s %-20s %-20s %-20s%n", "OID", "OName", "TimeOwned", "Team");
-                while(rs.next())
-                {
-                  OID = rs.getInt("OID");
-                  OName = rs.getString("OName");
-                  TimeOwned= rs.getInt("TimeOwned");
-                  OTeam = rs.getInt("Team");
-
-                  System.out.format("%-4d %-20s %-20d %-20d%n", OID, OName, TimeOwned, OTeam);
-                }
-                System.out.println();
                 rs.close();
                 break;
         case 6:
@@ -577,20 +487,6 @@ public static void DatabaseDeleteQuery(Connection conn, int tablechoice) throws 
                 qry = String.format("Delete From Coach Where CID = %d", CID);
                 rs = stmt.executeQuery(qry);
 
-                // Printing table after insertion
-                rs = stmt.executeQuery("Select * From Coach");
-
-                System.out.format("%-4s %-20s %-20s %-20s%n", "CID", "CName", "CRole", "Team");
-                while(rs.next())
-                {
-                  CID = rs.getInt("CID");
-                  CName = rs.getString("CName");
-                  CRole = rs.getString("CRole");
-                  CTeam = rs.getInt("Team");
-
-                  System.out.format("%-4d %-20s %-20s %-20d%n", CID, CName, CRole, CTeam);
-                }
-                System.out.println();
                 rs.close();
                 break;
         case 7:
@@ -600,20 +496,6 @@ public static void DatabaseDeleteQuery(Connection conn, int tablechoice) throws 
                 qry = String.format("Delete From Home Where HID = %d", HID);
                 rs = stmt.executeQuery(qry);
 
-                // Printing table after insertion
-                rs = stmt.executeQuery("Select * From Home");
-
-                System.out.format("%-4s %-20s %-20s %-20s%n", "HID", "State", "City", "Arena");
-                while(rs.next())
-                {
-                  HID = rs.getInt("HID");
-                  State = rs.getString("State");
-                  City = rs.getString("City");
-                  Arena = rs.getString("Arena");
-
-                  System.out.format("%-4d %-20s %-20s %-20s%n", HID, State, City, Arena);
-                }
-                System.out.println();
                 rs.close();
                 break;
         case 8:
@@ -625,6 +507,113 @@ public static void DatabaseDeleteQuery(Connection conn, int tablechoice) throws 
     }
 }
 
+public static void DatabaseUpdateQuery(Connection conn, int tablechoice, String tablechoice2, int rowID, String input) throws SQLException
+{
+  Statement stmt = conn.createStatement();
+  String qry;
+  ResultSet rs;
+
+  switch (tablechoice)
+  {
+      case 1:
+              if (input.matches("[0-9]+") && input.length() > 2)
+              {
+                qry = String.format("Update Team Set %s=%d Where TID = %d", tablechoice2, Integer.parseInt(input), rowID);
+              }
+              else
+              {
+                qry = String.format("Update Team Set %s='%s' Where TID = %d", tablechoice2, input, rowID);
+              }
+
+              rs = stmt.executeQuery(qry);
+              rs.close();
+              break;
+      case 2:
+              if (input.matches("[0-9]+") && input.length() > 2)
+              {
+                qry = String.format("Update Player Set %s=%d Where PID = %d", tablechoice2, Integer.parseInt(input), rowID);
+              }
+              else
+              {
+                qry = String.format("Update Player Set %s='%s' Where PID = %d", tablechoice2, input, rowID);
+              }
+
+              rs = stmt.executeQuery(qry);
+              rs.close();
+              break;
+      case 3:
+              if (input.matches("[0-9]+") && input.length() > 2)
+              {
+                qry = String.format("Update PlayerStats Set %s=%d Where PSID = %d", tablechoice2, Integer.parseInt(input), rowID);
+              }
+              else
+              {
+                qry = String.format("Update PlayerStats Set %s='%s' Where PSID = %d", tablechoice2, input, rowID);
+              }
+
+              rs = stmt.executeQuery(qry);
+              rs.close();
+              break;
+      case 4:
+              if (input.matches("[0-9]+") && input.length() > 2)
+              {
+                qry = String.format("Update GenManager Set %s=%d Where GMID = %d", tablechoice2, Integer.parseInt(input), rowID);
+              }
+              else
+              {
+                qry = String.format("Update GenManager Set %s='%s' Where GMID = %d", tablechoice2, input, rowID);
+              }
+
+              rs = stmt.executeQuery(qry);
+              rs.close();
+              break;
+      case 5:
+              if (input.matches("[0-9]+") && input.length() > 2)
+              {
+                qry = String.format("Update Owner Set %s=%d Where OID = %d", tablechoice2, Integer.parseInt(input), rowID);
+              }
+              else
+              {
+                qry = String.format("Update Owner Set %s='%s' Where OID = %d", tablechoice2, input, rowID);
+              }
+
+              rs = stmt.executeQuery(qry);
+              rs.close();
+              break;
+      case 6:
+              if (input.matches("[0-9]+") && input.length() > 2)
+              {
+                qry = String.format("Update Coach Set %s=%d Where CID = %d", tablechoice2, Integer.parseInt(input), rowID);
+              }
+              else
+              {
+                qry = String.format("Update Coach Set %s='%s' Where CID = %d", tablechoice2, input, rowID);
+              }
+
+              rs = stmt.executeQuery(qry);
+              rs.close();
+              break;
+      case 7:
+              if (input.matches("[0-9]+") && input.length() > 2)
+              {
+                qry = String.format("Update Home Set %s=%d Where HID = %d", tablechoice2, Integer.parseInt(input), rowID);
+              }
+              else
+              {
+                qry = String.format("Update Home Set %s='%s' Where HID = %d", tablechoice2, input, rowID);
+              }
+
+              rs = stmt.executeQuery(qry);
+              rs.close();
+              break;
+      case 8:
+              System.out.println("Exiting Program");
+              break;
+      default:
+              System.out.println("Illegal choice");
+              break;
+}
+}
 public static void PlayerMost(Connection conn) throws SQLException
 {
     Statement stmt = conn.createStatement();
@@ -684,5 +673,141 @@ public static void PrintCoaches(Connection conn) throws SQLException
   }
   System.out.println();
   rs.close();
+}
+
+public static void PrintAnyTable(Connection conn, int tablechoice) throws SQLException
+{
+  ResultSet rs;
+  Statement stmt = conn.createStatement();
+
+  switch (tablechoice)
+  {
+      case 1:
+              // Printing table after insertion
+              rs = stmt.executeQuery("Select * From Team");
+
+              System.out.format("%-4s %-20s %-20s%n", "TID", "TName", "Home");
+              while(rs.next())
+              {
+                int TID = rs.getInt("TID");
+                String TName = rs.getString("TName");
+                int THome = rs.getInt("Home");
+
+                System.out.format("%-4d %-20s %-20d%n", TID, TName, THome);
+              }
+              System.out.println();
+              rs.close();
+              break;
+      case 2:
+              // Printing table after insertion
+              rs = stmt.executeQuery("Select * From Player");
+
+              System.out.format("%-4s %-20s %-20s %-20s%n", "PID", "PName", "Position", "Team");
+              while(rs.next())
+              {
+                int PID = rs.getInt("PID");
+                String PName = rs.getString("PName");
+                String Position = rs.getString("Position");
+                int PTeam = rs.getInt("Team");
+
+                System.out.format("%-4d %-20s %-20s %-20d%n", PID, PName, Position, PTeam);
+              }
+              System.out.println();
+              rs.close();
+
+              break;
+      case 3:
+              // Printing table after insertion
+              rs = stmt.executeQuery("Select * From PlayerStats");
+
+              System.out.format("%-4s %-20s %-20s %-20s %-20s %-20s %-20s %-20s%n", "PSID", "PlayerID", "PName", "FGMFPA", "3FGMFPA", "GP", "PTS", "FTMFTA");
+              while(rs.next())
+              {
+                int PSID = rs.getInt("PSID");
+                int PlayerID = rs.getInt("PlayerID");
+                String PlayerName = rs.getString("PName");
+                int FGMFPA = rs.getInt("FGMFPA");
+                int FGMFPA3 = rs.getInt("3FGMFPA");
+                int GP = rs.getInt("GP");
+                int PTS = rs.getInt("PTS");
+                int FTMFTA = rs.getInt("FTMFTA");
+
+                System.out.format("%-4d %-20d %-20s %-20d %-20d %-20d %-20d %-20d%n", PSID, PlayerID, PlayerName, FGMFPA, FGMFPA3, GP, PTS, FTMFTA);
+              }
+              System.out.println();
+              rs.close();
+              break;
+      case 4:
+              rs = stmt.executeQuery("Select * From GenManager");
+
+              System.out.format("%-4s %-20s %-20s %-20s%n", "GMID", "GMName", "TimeOnTeam", "Team");
+              while(rs.next())
+              {
+                int GMID = rs.getInt("GMID");
+                String GName = rs.getString("GMName");
+                int TimeOnTeam= rs.getInt("TimeOnTeam");
+                int GTeam = rs.getInt("Team");
+
+                System.out.format("%-4d %-20s %-20d %-20d%n", GMID, GName, TimeOnTeam, GTeam);
+              }
+              System.out.println();
+              rs.close();
+              break;
+      case 5:
+              rs = stmt.executeQuery("Select * From Owner");
+
+              System.out.format("%-4s %-20s %-20s %-20s%n", "OID", "OName", "TimeOwned", "Team");
+              while(rs.next())
+              {
+                int OID = rs.getInt("OID");
+                String OName = rs.getString("OName");
+                int TimeOwned= rs.getInt("TimeOwned");
+                int OTeam = rs.getInt("Team");
+
+                System.out.format("%-4d %-20s %-20d %-20d%n", OID, OName, TimeOwned, OTeam);
+              }
+              System.out.println();
+              rs.close();
+              break;
+      case 6:
+              rs = stmt.executeQuery("Select * From Coach");
+
+              System.out.format("%-4s %-20s %-20s %-20s%n", "CID", "CName", "CRole", "Team");
+              while(rs.next())
+              {
+                int CID = rs.getInt("CID");
+                String CName = rs.getString("CName");
+                String CRole = rs.getString("CRole");
+                int CTeam = rs.getInt("Team");
+
+                System.out.format("%-4d %-20s %-20s %-20d%n", CID, CName, CRole, CTeam);
+              }
+              System.out.println();
+              rs.close();
+              break;
+      case 7:
+              rs = stmt.executeQuery("Select * From Home");
+
+              System.out.format("%-4s %-20s %-20s %-20s%n", "HID", "State", "City", "Arena");
+              while(rs.next())
+              {
+                int HID = rs.getInt("HID");
+                String State = rs.getString("State");
+                String City = rs.getString("City");
+                String Arena = rs.getString("Arena");
+
+                System.out.format("%-4d %-20s %-20s %-20s%n", HID, State, City, Arena);
+              }
+              System.out.println();
+              rs.close();
+              break;
+      case 8:
+              System.out.println("Exiting Program");
+              break;
+      default:
+              System.out.println("Illegal choice");
+              break;
+    }
+
 }
 }
